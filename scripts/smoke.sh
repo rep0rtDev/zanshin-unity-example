@@ -5,8 +5,9 @@ NAKAMA=${NAKAMA:-http://localhost:7350}
 KEY=${NAKAMA_SERVER_KEY:-defaultkey}
 DEVICE=${DEVICE:-smoke-$(date +%s)}
 
-for i in $(seq 1 60); do curl -fs "$NAKAMA/healthcheck" >/dev/null && break; sleep 2; done
-TOKEN=$(curl -fs -u "$KEY:" -X POST "$NAKAMA/v2/account/authenticate/device?create=true" \
+for i in $(seq 1 90); do curl -fs "$NAKAMA/healthcheck" >/dev/null && break; sleep 2; done
+curl -fs "$NAKAMA/healthcheck" >/dev/null || { echo "smoke: Nakama is not answering at $NAKAMA"; exit 1; }
+TOKEN=$(curl -fsS -u "$KEY:" -X POST "$NAKAMA/v2/account/authenticate/device?create=true" \
   -d "{\"id\":\"$DEVICE\",\"vars\":{\"lang\":\"en\"}}" | python3 -c 'import sys,json; print(json.load(sys.stdin)["token"])')
 rpc() { curl -fs -X POST "$NAKAMA/v2/rpc/$1?unwrap" -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d "$2"; }
 

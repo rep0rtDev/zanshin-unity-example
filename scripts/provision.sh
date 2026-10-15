@@ -13,7 +13,8 @@ mint() { # kind name file
 mint server nakama /zanshin/server.key
 mint client unity  /zanshin/client.key
 
-zanshinctl config apply /config
+zanshinctl config apply /config | tee /tmp/apply.json
+if grep -q '"error":' /tmp/apply.json; then echo 'provision: config apply reported errors'; exit 1; fi
 echo
 echo "provision: done."
 echo "  console:            http://localhost:7550/console  (bootstrap key: \$ZANSHIN_ADMIN_KEY)"

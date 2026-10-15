@@ -1,3 +1,4 @@
+last_computed_at: null
 key: beta_testers
 name: Beta testers
 description: Players flagged custom.beta = true (set it from the console on the player page, or via zanshin.properties).
@@ -8,7 +9,8 @@ condition:
 percentage: 100.0
 enabled: true
 salt: ''
-tags: [example]
+tags:
+- example
 kind: dynamic
 recompute: live
 schedule_cron: ''

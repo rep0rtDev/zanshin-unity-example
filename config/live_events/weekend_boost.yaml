@@ -1,15 +1,22 @@
+tags:
+- example
 key: weekend_boost
 name: Double XP
-description: Always-on in this example so the sample has something to show; use starts_at / duration_secs / recurrence for a real schedule.
+description: Recurs every day at 00:00 UTC for 24 h, so it is always live in this example. Real weekends would be e.g. recurrence '0 0 18 * * Fri *' with duration_secs 216000.
 enabled: true
 condition:
   all: []
 audiences: []
 starts_at: 2026-01-01T00:00:00Z
 ends_at: null
-duration_secs: 315360000
-recurrence: null
+duration_secs: 86400
+recurrence: 0 0 0 * * * *
 payload:
-  xp_multiplier: 2
   banner: Double XP weekend
-tags: [example]
+  xp_multiplier: 2
+join_mode: auto
+sticky: false
+participation_secs: null
+flag_overrides: {}
+variants: []
+metrics: []

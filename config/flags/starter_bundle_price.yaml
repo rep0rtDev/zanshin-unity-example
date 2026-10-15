@@ -1,18 +1,21 @@
+tags:
+- example
 key: starter_bundle_price
 name: Starter bundle price
 description: Guests (device auth — default.auth_provider is filled in by the Nakama module) see a cheaper starter bundle.
 value_type: number
 default_value: 4.99
 enabled: true
-tags: [example]
-salt: ''
 rules:
-  - id: guests
-    name: Device-auth guests
-    condition:
-      prop: default.auth_provider
-      op: eq
-      value: device
-    percentage: 100.0
-    variants:
-      - { key: guest, value: 2.99, weight: 100.0 }
+- id: guests
+  name: Device-auth guests
+  condition:
+    prop: default.auth_provider
+    op: eq
+    value: device
+  percentage: 100.0
+  variants:
+  - key: guest
+    value: 2.99
+    weight: 100.0
+salt: ''

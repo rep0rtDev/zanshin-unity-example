@@ -9,12 +9,13 @@ jobs:
       - run: docker compose up -d
       - name: wait for provisioning
         run: |
-          for i in $(seq 1 60); do
-            state=$(docker compose ps -a --format json provision | python3 -c 'import sys,json; d=[json.loads(l) for l in sys.stdin if l.strip()]; print(d[0]["State"] if d else "")')
-            [ "$state" = "exited" ] && break; sleep 3
+          for i in $(seq 1 90); do
+            code=$(docker inspect -f '{{.State.Status}} {{.State.ExitCode}}' "$(docker compose ps -aq provision)")
+            case "$code" in exited*) break;; esac
+            sleep 3
           done
           docker compose logs provision
-          [ "$(docker compose ps -a --format json provision | python3 -c 'import sys,json; print(json.loads(sys.stdin.readline())["ExitCode"])')" = "0" ]
+          [ "$code" = "exited 0" ] || { echo "provision did not finish: $code"; docker compose logs zanshin; exit 1; }
       - run: ./scripts/smoke.sh
       - if: failure()
         run: docker compose logs zanshin nakama
