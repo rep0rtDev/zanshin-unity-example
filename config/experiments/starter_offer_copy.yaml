@@ -1,0 +1,22 @@
+key: starter_offer_copy
+name: Starter offer copy
+description: Which headline sells the starter bundle better. Assignment is sticky per player.
+hypothesis: A discount framing lifts purchase conversion.
+status: running
+condition:
+  all: []
+audiences: []
+percentage: 100.0
+variants:
+  - { key: a, name: Plain, value: Starter bundle, weight: 1.0 }
+  - { key: b, name: Discount, value: Welcome pack — 40% off today, weight: 1.0 }
+control: a
+flag_key: null
+salt: ''
+starts_at: null
+ends_at: null
+tags: [example]
+priority: 0
+split_key: identity
+max_participants: null
+winner: null

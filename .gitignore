@@ -1,0 +1,11 @@
+# Unity
+unity/[Ll]ibrary/
+unity/[Tt]emp/
+unity/[Oo]bj/
+unity/[Bb]uild/
+unity/[Ll]ogs/
+unity/[Uu]ser[Ss]ettings/
+unity/Packages/packages-lock.json
+unity/*.csproj
+unity/*.sln
+.DS_Store

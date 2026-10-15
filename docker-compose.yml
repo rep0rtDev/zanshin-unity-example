@@ -1,0 +1,79 @@
+# Nakama + Zanshin + Unity example. `docker compose up -d`, then open unity/ in the Unity editor.
+#
+#   Unity ──▶ Nakama :7350 (device auth, zanshin.* RPCs) ──▶ Zanshin :7550 (flags, live events, inbox, events)
+#                                                              console: http://localhost:7550/console
+services:
+  zanshin:
+    image: ghcr.io/rep0rtdev/zanshin:${ZANSHIN_VERSION:-0.1.0}
+    ports:
+      - "7550:7550"
+    environment:
+      ZANSHIN__DATABASE__URL: postgres://zanshin:zanshin@zanshin-db:5432/zanshin
+      ZANSHIN__REDIS__URL: redis://redis:6379/0
+      ZANSHIN__AUTH__JWT_SECRET: ${ZANSHIN_JWT_SECRET:-example-only-change-me-example-only-change-me}
+      ZANSHIN__ADMIN__BOOTSTRAP_KEY: ${ZANSHIN_ADMIN_KEY:-example-admin-key-change-me}
+      ZANSHIN__LOG__JSON: "false"
+    depends_on:
+      zanshin-db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    restart: unless-stopped
+
+  # One-shot: mints a server key for Nakama and a client key for the Unity SDK, applies ./config.
+  provision:
+    image: ghcr.io/rep0rtdev/zanshin:${ZANSHIN_VERSION:-0.1.0}
+    entrypoint: ["/bin/sh", "/scripts/provision.sh"]
+    environment:
+      ZANSHIN_URL: http://zanshin:7550
+      ZANSHIN_ADMIN_KEY: ${ZANSHIN_ADMIN_KEY:-example-admin-key-change-me}
+    volumes:
+      - ./scripts:/scripts:ro
+      - ./config:/config:ro
+      - keys:/zanshin
+    depends_on: [zanshin]
+    restart: "no"
+
+  nakama:
+    image: ghcr.io/rep0rtdev/zanshin-nakama:${ZANSHIN_VERSION:-0.1.0}
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        until [ -s /zanshin/server.key ]; do echo "nakama: waiting for the Zanshin server key"; sleep 2; done
+        export ZANSHIN_SERVER_KEY="$(cat /zanshin/server.key)"
+        /nakama/nakama migrate up --database.address postgres:nakama@nakama-db:5432/nakama
+        exec /nakama/nakama --name nakama1 --database.address postgres:nakama@nakama-db:5432/nakama \
+          --logger.level INFO --session.token_expiry_sec 7200 --socket.server_key "${NAKAMA_SERVER_KEY:-defaultkey}" \
+          --console.username admin --console.password "${NAKAMA_CONSOLE_PASSWORD:-password}"
+    environment:
+      ZANSHIN_URL: http://zanshin:7550
+    ports:
+      - "7350:7350"   # API (Unity connects here)
+      - "7351:7351"   # Nakama console
+    volumes:
+      - keys:/zanshin:ro
+    depends_on:
+      nakama-db: { condition: service_healthy }
+      zanshin: { condition: service_started }
+    restart: unless-stopped
+
+  zanshin-db:
+    image: postgres:16-alpine
+    environment: { POSTGRES_USER: zanshin, POSTGRES_PASSWORD: zanshin, POSTGRES_DB: zanshin }
+    volumes: [zanshin-pg:/var/lib/postgresql/data]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U zanshin -d zanshin"], interval: 5s, timeout: 3s, retries: 20 }
+
+  nakama-db:
+    image: postgres:16-alpine
+    environment: { POSTGRES_USER: postgres, POSTGRES_PASSWORD: nakama, POSTGRES_DB: nakama }
+    volumes: [nakama-pg:/var/lib/postgresql/data]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U postgres -d nakama"], interval: 5s, timeout: 3s, retries: 20 }
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck: { test: ["CMD", "redis-cli", "ping"], interval: 5s, timeout: 3s, retries: 20 }
+
+volumes:
+  keys:
+  zanshin-pg:
+  nakama-pg:

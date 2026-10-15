@@ -1,0 +1,25 @@
+key: shop_v2
+name: Shop v2
+description: New shop UI. Beta testers always get it; everyone else is in a 50 % rollout.
+value_type: bool
+default_value: false
+enabled: true
+tags: [example]
+salt: ''
+rules:
+  - id: beta
+    name: Beta testers
+    condition:
+      prop: custom.beta
+      op: eq
+      value: true
+    percentage: 100.0
+    variants:
+      - { key: on, value: true, weight: 100.0 }
+  - id: rollout
+    name: 50 % rollout
+    condition:
+      all: []
+    percentage: 50.0
+    variants:
+      - { key: on, value: true, weight: 100.0 }

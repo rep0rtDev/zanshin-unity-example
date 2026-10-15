@@ -1,0 +1,15 @@
+key: beta_testers
+name: Beta testers
+description: Players flagged custom.beta = true (set it from the console on the player page, or via zanshin.properties).
+condition:
+  prop: custom.beta
+  op: eq
+  value: true
+percentage: 100.0
+enabled: true
+salt: ''
+tags: [example]
+kind: dynamic
+recompute: live
+schedule_cron: ''
+source: ''
