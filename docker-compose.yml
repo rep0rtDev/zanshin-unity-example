@@ -4,7 +4,7 @@
 #                                                              console: http://localhost:7550/console
 services:
   zanshin:
-    image: ghcr.io/rep0rtdev/zanshin:${ZANSHIN_VERSION:-0.3.1}
+    image: ghcr.io/rep0rtdev/zanshin:${ZANSHIN_VERSION:-0.3.2}
     ports:
       - "7550:7550"
     environment:
@@ -20,7 +20,7 @@ services:
 
   # One-shot: mints a server key for Nakama and a client key for the Unity SDK, applies ./config.
   provision:
-    image: ghcr.io/rep0rtdev/zanshin:${ZANSHIN_VERSION:-0.3.1}
+    image: ghcr.io/rep0rtdev/zanshin:${ZANSHIN_VERSION:-0.3.2}
     entrypoint: ["/bin/sh", "/scripts/provision.sh"]
     user: "0"   # the image runs unprivileged; root is needed to write the keys volume
     environment:
@@ -34,7 +34,7 @@ services:
     restart: "no"
 
   nakama:
-    image: ghcr.io/rep0rtdev/zanshin-nakama:${ZANSHIN_VERSION:-0.3.1}
+    image: ghcr.io/rep0rtdev/zanshin-nakama:${ZANSHIN_VERSION:-0.3.2}
     entrypoint:
       - /bin/sh
       - -ec
