@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.heroiclabs.nakama-unity": "https://github.com/heroiclabs/nakama-unity.git?path=/Packages/Nakama#v3.22.1",
-    "dev.rep0rt.zanshin": "https://github.com/rep0rtDev/zanshin.git?path=sdk/unity#v0.3.0",
+    "dev.rep0rt.zanshin": "https://github.com/rep0rtDev/zanshin.git?path=sdk/unity#v0.3.1",
     "com.unity.ugui": "1.0.0",
     "com.unity.modules.imgui": "1.0.0",
     "com.unity.modules.jsonserialize": "1.0.0",
